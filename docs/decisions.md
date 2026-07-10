@@ -193,6 +193,27 @@ answer than `-O0` for negative operands — which would be a real
 correctness bug hiding inside the project's own headline feature
 (measurable, behavior-preserving optimization).
 
+## 13. print() calls host Python callbacks, not libc's printf directly
+
+**Decision:** `print()` compiles to calls against four declared external
+functions (`novac_print_int`/`_float`/`_bool`/`_string`), each backed by a
+Python function (`print(...)` under the hood) registered into the MCJIT
+engine via `llvm.add_symbol()` — not a direct call into libc's `printf`.
+
+**Why:** found empirically while writing Phase 6 tests on Windows. Modern
+Python links the Universal CRT, and `ctypes` cannot resolve `printf` by
+that name from the `api-ms-win-crt-stdio-*.dll` forwarder (it's a virtual
+API-set DLL, not a normal exports table `GetProcAddress` can walk the
+usual way). Loading the legacy `msvcrt.dll` instead *does* resolve
+`printf` and even runs correctly when driven by hand — but it turned out
+to be a second, independent CRT instance with its own disconnected stdio
+buffering, so pytest's `capfd` (OS file-descriptor capture) never observed
+its output; it only surfaced at process exit. Routing through a
+Python-backed callback sidesteps CRT-instance/linking issues entirely,
+works identically cross-platform, and is directly testable with
+`capsys` — a standard technique for a JIT'd toy language's I/O, not a
+workaround.
+
 ## 9a. Arrays: single dimension only
 
 **Decision:** A type is a scalar (`int`/`float`/`bool`/`string`) optionally
