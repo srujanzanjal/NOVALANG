@@ -1,0 +1,19 @@
+// No loops - all work happens once. Deliberately full of foldable
+// constant expressions and dead variables to showcase instruction-count
+// reduction specifically. Runtime is fast either way (nothing here is
+// repeated), so this program's story is code-size impact, not speedup -
+// the honest counterpart to loop_redundant.nova's runtime story.
+func main() -> int {
+    let a: int = 1 + 2;
+    let b: int = 3 + 4;
+    let c: int = a + b;
+    let d: int = 10 * 20;
+    let e: int = 100 / 4;
+    let f: int = d + e;
+    let unused1: int = a * b * c;
+    let unused2: int = d * e * f;
+    let unused3: int = unused1 + unused2;
+    let g: int = c + f;
+    let unused4: int = g * 2;
+    return g;
+}

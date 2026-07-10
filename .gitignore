@@ -9,5 +9,3 @@ __pycache__/
 *.exe
 !examples/**/*.exe
 .pytest_cache/
-benchmarks/results/*.json
-benchmarks/results/*.png

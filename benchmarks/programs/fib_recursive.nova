@@ -1,0 +1,16 @@
+// Naive recursive Fibonacci. Optimizer passes here mostly can't help -
+// each call's arguments are runtime values (n - 1, n - 2), not constants,
+// so there's nothing to fold/propagate/eliminate. Included as a baseline:
+// proof that recursion executes correctly and at real native speed, and a
+// control case showing optimization impact isn't uniform across programs.
+func fib(n: int) -> int {
+    if (n <= 1) {
+        return n;
+    } else {
+        return fib(n - 1) + fib(n - 2);
+    }
+}
+
+func main() -> int {
+    return fib(28);
+}

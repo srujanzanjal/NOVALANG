@@ -1,0 +1,17 @@
+// A hot loop with deliberate redundancy: 'b' recomputes the exact same
+// runtime-dependent expression as 'a' (a CSE target - can't be constant-
+// folded since both depend on the loop variable), and 'unused' is dead
+// code (a DCE target). Because the loop body is one basic block analyzed
+// once at compile time, whatever the optimizer removes here is removed
+// for every one of the loop's iterations at runtime - a compile-time fix
+// multiplied by a large runtime factor.
+func main() -> int {
+    let sum: int = 0;
+    for (let i: int = 0; i < 2000000; i = i + 1) {
+        let a: int = i * 3 + 7;
+        let b: int = i * 3 + 7;
+        let unused: int = a * 12345 + b * 67;
+        sum = sum + a + b;
+    }
+    return sum;
+}

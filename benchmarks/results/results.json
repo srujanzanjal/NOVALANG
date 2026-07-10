@@ -1,0 +1,42 @@
+[
+  {
+    "name": "array_sum_repeated",
+    "instructions_before": 32,
+    "instructions_after": 32,
+    "instruction_reduction_pct": 0.0,
+    "time_before_ms": 13.2139,
+    "time_after_ms": 11.8108,
+    "speedup": 1.12,
+    "return_value": 27500000
+  },
+  {
+    "name": "constant_showcase",
+    "instructions_before": 25,
+    "instructions_after": 1,
+    "instruction_reduction_pct": 96.0,
+    "time_before_ms": 0.0007,
+    "time_after_ms": 0.0006,
+    "speedup": 1.17,
+    "return_value": 235
+  },
+  {
+    "name": "fib_recursive",
+    "instructions_before": 11,
+    "instructions_after": 11,
+    "instruction_reduction_pct": 0.0,
+    "time_before_ms": 3.0117,
+    "time_after_ms": 3.0424,
+    "speedup": 0.99,
+    "return_value": 317811
+  },
+  {
+    "name": "loop_redundant",
+    "instructions_before": 22,
+    "instructions_after": 18,
+    "instruction_reduction_pct": 18.2,
+    "time_before_ms": 12.6208,
+    "time_after_ms": 8.6034,
+    "speedup": 1.47,
+    "return_value": -116625024
+  }
+]
