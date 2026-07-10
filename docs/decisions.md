@@ -136,6 +136,25 @@ allowlist) is the primary interface. Convenience aliases:
 optimization pass independently and measure its individual impact, not just
 "optimized vs. not."
 
+## 10. All-paths-return check (added during Phase 3, not in the original spec)
+
+**Decision:** Semantic analysis rejects any function where control can
+fall off the end without hitting a `return` on every path. Algorithm
+(`_always_returns` in `novac/semantic.py`): a `Block` always-returns if any
+statement in it always-returns (everything after that is already flagged
+separately as unreachable code); an `if` always-returns only if it has an
+`else` and **both** branches always-return; `while`/`for` are never assumed
+to always-return (no static trip-count analysis) — a return has to follow
+the loop.
+
+**Why:** every NovaLang function has a concrete, non-void return type
+(there is no `void`), and `docs/tac_spec.md` requires every basic block to
+end in exactly one terminator instruction. A function that can fall off
+its end would produce an LLVM block with no terminator, which fails
+LLVM's verifier outright. This check exists to fail fast in Phase 3 with a
+clear source-level message, instead of failing opaquely inside Phase 6
+codegen.
+
 ## 9a. Arrays: single dimension only
 
 **Decision:** A type is a scalar (`int`/`float`/`bool`/`string`) optionally

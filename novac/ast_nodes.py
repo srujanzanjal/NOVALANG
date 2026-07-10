@@ -25,6 +25,7 @@ class IntLiteral(Expr):
     value: int
     line: int
     col: int
+    type: "Type | None" = None
 
 
 @dataclass
@@ -32,6 +33,7 @@ class FloatLiteral(Expr):
     value: float
     line: int
     col: int
+    type: "Type | None" = None
 
 
 @dataclass
@@ -39,6 +41,7 @@ class BoolLiteral(Expr):
     value: bool
     line: int
     col: int
+    type: "Type | None" = None
 
 
 @dataclass
@@ -46,6 +49,7 @@ class StringLiteral(Expr):
     value: str
     line: int
     col: int
+    type: "Type | None" = None
 
 
 @dataclass
@@ -53,6 +57,7 @@ class Identifier(Expr):
     name: str
     line: int
     col: int
+    type: "Type | None" = None
 
 
 @dataclass
@@ -60,6 +65,7 @@ class ArrayLiteral(Expr):
     elements: list
     line: int
     col: int
+    type: "Type | None" = None
 
 
 @dataclass
@@ -68,6 +74,7 @@ class ArrayIndex(Expr):
     index: Expr
     line: int
     col: int
+    type: "Type | None" = None
 
 
 @dataclass
@@ -77,6 +84,7 @@ class BinaryOp(Expr):
     right: Expr
     line: int
     col: int
+    type: "Type | None" = None
 
 
 @dataclass
@@ -85,6 +93,7 @@ class UnaryOp(Expr):
     operand: Expr
     line: int
     col: int
+    type: "Type | None" = None
 
 
 @dataclass
@@ -93,6 +102,7 @@ class Call(Expr):
     args: list
     line: int
     col: int
+    type: "Type | None" = None
 
 
 # -- Statements --
