@@ -1,0 +1,82 @@
+(* NovaLang Grammar — EBNF *)
+(* This is the single source of truth for the parser (Phase 2). *)
+(* Terminals are quoted; ALL_CAPS names are lexer token classes. *)
+
+program         = { function } ;
+
+function        = "func" IDENT "(" [ paramList ] ")" "->" type block ;
+paramList       = param { "," param } ;
+param           = IDENT ":" type ;
+
+type            = "int" | "float" | "bool" | "string"
+                | type "[" INT_LITERAL "]" ;      (* fixed-size array, e.g. int[5] *)
+
+block           = "{" { statement } "}" ;
+
+statement       = varDecl
+                | assignStmt
+                | ifStmt
+                | whileStmt
+                | forStmt
+                | returnStmt
+                | exprStmt
+                | block ;
+
+varDecl         = "let" IDENT ":" type [ "=" expression ] ";" ;
+assignStmt      = lvalue "=" expression ";" ;
+lvalue          = IDENT [ "[" expression "]" ] ;
+
+ifStmt          = "if" "(" expression ")" block [ "else" ( ifStmt | block ) ] ;
+whileStmt       = "while" "(" expression ")" block ;
+forStmt         = "for" "(" ( varDecl | assignStmt | ";" )
+                        expression ";"
+                        assignStmt_noSemi
+                  ")" block ;
+assignStmt_noSemi = lvalue "=" expression ;        (* for-loop increment clause, no trailing ; *)
+
+returnStmt      = "return" [ expression ] ";" ;
+exprStmt        = expression ";" ;                 (* e.g. a bare call: print(x); *)
+
+(* Expression grammar, lowest to highest precedence *)
+expression      = assignment ;
+assignment      = logicOr ;                        (* assignment-as-statement only; see assignStmt *)
+logicOr         = logicAnd { "||" logicAnd } ;
+logicAnd        = equality { "&&" equality } ;
+equality        = relational { ( "==" | "!=" ) relational } ;
+relational      = additive { ( "<" | "<=" | ">" | ">=" ) additive } ;
+additive        = multiplicative { ( "+" | "-" ) multiplicative } ;
+multiplicative  = unary { ( "*" | "/" | "%" ) unary } ;
+unary           = ( "!" | "-" ) unary | postfix ;
+postfix         = primary { "[" expression "]" } ; (* array indexing *)
+
+primary         = INT_LITERAL
+                | FLOAT_LITERAL
+                | BOOL_LITERAL                      (* "true" | "false" *)
+                | STRING_LITERAL                    (* print() argument only — see decisions.md #2 *)
+                | IDENT
+                | call
+                | arrayLiteral
+                | "(" expression ")" ;
+
+call            = IDENT "(" [ argList ] ")" ;
+argList         = expression { "," expression } ;
+
+arrayLiteral    = "[" [ expression { "," expression } ] "]" ;
+
+(* ---- Lexical grammar (token classes produced by the Lexer, Phase 1) ---- *)
+IDENT           = letter , { letter | digit | "_" } ;
+INT_LITERAL     = digit , { digit } ;
+FLOAT_LITERAL   = digit , { digit } , "." , digit , { digit } ;
+BOOL_LITERAL    = "true" | "false" ;
+STRING_LITERAL  = '"' , { any_char_except_quote_or_newline } , '"' ;
+
+KEYWORDS        = "func" | "let" | "if" | "else" | "while" | "for"
+                | "return" | "int" | "float" | "bool" | "string" | "true" | "false" ;
+
+(* ---- Notes ---- *)
+(* - Built-in print(expr) is parsed as an ordinary call; it is resolved
+     specially in semantic analysis (Phase 3) rather than being a keyword. *)
+(* - No implicit type conversion anywhere in this grammar (decisions.md #4);
+     that rule is enforced in semantic analysis, not the grammar itself. *)
+(* - Array bounds checking (decisions.md #3) is a semantic-analysis concern,
+     not a grammar concern — postfix indexing is syntactically unrestricted. *)

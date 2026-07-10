@@ -1,0 +1,13 @@
+.venv/
+.venv_test/
+.claude/
+__pycache__/
+*.pyc
+*.ll
+*.obj
+*.o
+*.exe
+!examples/**/*.exe
+.pytest_cache/
+benchmarks/results/*.json
+benchmarks/results/*.png
