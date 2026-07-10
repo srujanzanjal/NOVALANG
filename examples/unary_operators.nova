@@ -1,0 +1,11 @@
+// Unary negation and logical not.
+func main() -> int {
+    let x: int = 5;
+    print(-x);
+    print(-(-x));
+
+    let b: bool = true;
+    print(!b);
+    print(!!b);
+    return 0;
+}

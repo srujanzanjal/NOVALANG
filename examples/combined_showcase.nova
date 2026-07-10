@@ -1,0 +1,37 @@
+// A larger program combining most language features: functions,
+// recursion, arrays, loops, conditionals, and every scalar type.
+func isPrime(n: int) -> bool {
+    if (n < 2) {
+        return false;
+    }
+    for (let i: int = 2; i * i <= n; i = i + 1) {
+        if (n % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+func sumPrimesUpTo(limit: int) -> int {
+    let sum: int = 0;
+    for (let n: int = 2; n <= limit; n = n + 1) {
+        if (isPrime(n)) {
+            sum = sum + n;
+        }
+    }
+    return sum;
+}
+
+func main() -> int {
+    let primes: bool[10] = [
+        isPrime(2), isPrime(3), isPrime(4), isPrime(5), isPrime(6),
+        isPrime(7), isPrime(8), isPrime(9), isPrime(10), isPrime(11)
+    ];
+
+    for (let i: int = 0; i < 10; i = i + 1) {
+        print(primes[i]);
+    }
+
+    print(sumPrimesUpTo(30));
+    return 0;
+}

@@ -1,0 +1,9 @@
+// print() with each supported literal type.
+func main() -> int {
+    print(42);
+    print(3.14);
+    print(true);
+    print(false);
+    print("hello, NovaLang");
+    return 0;
+}

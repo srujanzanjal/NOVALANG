@@ -1,0 +1,12 @@
+// Functions with multiple parameters. No implicit int/float conversion
+// (decisions.md #4), so every operand in a mixed expression must already
+// be the same type - here all three parameters are float.
+func weightedSum(a: float, b: float, weight: float) -> float {
+    let total: float = a + b;
+    return weight * total;
+}
+
+func main() -> int {
+    print(weightedSum(3.0, 4.0, 2.5));
+    return 0;
+}

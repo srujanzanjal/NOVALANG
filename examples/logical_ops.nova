@@ -1,0 +1,14 @@
+// && and || short-circuit: the right-hand side is never evaluated once
+// the result is already determined. If short-circuiting were broken, the
+// division by zero below would crash the program instead of printing
+// "false" safely.
+func main() -> int {
+    print(true && false);
+    print(true || false);
+    print(!true);
+    print(!false);
+
+    print(false && (1 / 0 > 0));  // right side skipped - no crash
+    print(true || (1 / 0 > 0));   // right side skipped - no crash
+    return 0;
+}

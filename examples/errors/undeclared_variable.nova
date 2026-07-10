@@ -1,0 +1,4 @@
+// Semantic error: 'y' is never declared.
+func main() -> int {
+    return y;
+}

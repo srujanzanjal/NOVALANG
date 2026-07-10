@@ -1,0 +1,15 @@
+// Demonstrates panic-mode error recovery: three independent syntax
+// mistakes in three different functions, all reported in a single
+// compile run (up to MAX_ERRORS) instead of aborting on the first one -
+// a GCC/Clang-style behavior most student compilers don't attempt.
+func a() -> int {
+    let x: int = ;
+}
+
+func b() -> int {
+    return +;
+}
+
+func c() -> int {
+    return 0;
+}

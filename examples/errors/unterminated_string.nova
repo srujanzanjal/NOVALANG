@@ -1,0 +1,5 @@
+// Lexer error: the string literal is never closed before the newline.
+func main() -> int {
+    print("this string never closes);
+    return 0;
+}

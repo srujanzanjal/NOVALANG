@@ -1,0 +1,26 @@
+// Mutual recursion: each function forward-references the other. Resolves
+// regardless of source order because semantic analysis and codegen both
+// collect all function signatures before checking/emitting any body
+// (decisions.md #5).
+func isEven(n: int) -> bool {
+    if (n == 0) {
+        return true;
+    } else {
+        return isOdd(n - 1);
+    }
+}
+
+func isOdd(n: int) -> bool {
+    if (n == 0) {
+        return false;
+    } else {
+        return isEven(n - 1);
+    }
+}
+
+func main() -> int {
+    print(isEven(10));
+    print(isOdd(10));
+    print(isEven(7));
+    return 0;
+}

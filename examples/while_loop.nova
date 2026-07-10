@@ -1,0 +1,11 @@
+// while loop: sum 1..10.
+func main() -> int {
+    let i: int = 1;
+    let sum: int = 0;
+    while (i <= 10) {
+        sum = sum + i;
+        i = i + 1;
+    }
+    print(sum);
+    return 0;
+}
