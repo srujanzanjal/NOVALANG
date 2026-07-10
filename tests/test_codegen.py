@@ -1,4 +1,4 @@
-from novac.codegen import compile_and_run, generate_llvm_ir
+from novac.codegen import compile_and_run, generate_llvm_ir, jit_compile
 from novac.ir_gen import IRGenerator
 from novac.lexer import Lexer
 from novac.optimizer import PASS_REGISTRY, run_passes
@@ -18,6 +18,19 @@ def run_source(src, entry="main", optimize=None):
 
     llvm_module = generate_llvm_ir(tac_module)
     return compile_and_run(llvm_module, entry)
+
+
+def test_jit_compile_allows_multiple_calls_without_recompiling():
+    tokens = Lexer("func main() -> int { return 7; }").tokenize()
+    program = Parser(tokens).parse_program()
+    errors = SemanticAnalyzer().analyze(program)
+    assert errors == []
+    llvm_module = generate_llvm_ir(IRGenerator().generate(program))
+
+    compiled = jit_compile(llvm_module)
+    assert compiled() == 7
+    assert compiled() == 7
+    assert compiled() == 7
 
 
 def test_return_value_simple():

@@ -281,7 +281,24 @@ class JITResult:
         self._callback_refs = callback_refs  # keeps ctypes callback trampolines from being GC'd
 
 
-def compile_and_run(llvm_module: lir.Module, entry_function: str = "main") -> JITResult:
+class CompiledProgram:
+    """A JIT-compiled module with its entry function ready to invoke
+    directly, as many times as needed, without repeating MCJIT setup.
+    Separated from compile_and_run() so benchmarking can time only actual
+    execution, not one-time JIT compilation overhead — bundling the two
+    would mean a short program's "execution time" mostly measures MCJIT
+    setup noise instead of real optimization impact."""
+
+    def __init__(self, cfunc, engine, callback_refs):
+        self.cfunc = cfunc
+        self.engine = engine
+        self._callback_refs = callback_refs
+
+    def __call__(self) -> int:
+        return self.cfunc()
+
+
+def jit_compile(llvm_module: lir.Module, entry_function: str = "main") -> CompiledProgram:
     llvm.initialize_native_target()
     llvm.initialize_native_asmprinter()
 
@@ -300,6 +317,10 @@ def compile_and_run(llvm_module: lir.Module, entry_function: str = "main") -> JI
 
     func_ptr = engine.get_function_address(entry_function)
     cfunc = ctypes.CFUNCTYPE(ctypes.c_int32)(func_ptr)
-    result = cfunc()
+    return CompiledProgram(cfunc, engine, callback_refs)
 
-    return JITResult(result, engine, callback_refs)
+
+def compile_and_run(llvm_module: lir.Module, entry_function: str = "main") -> JITResult:
+    program = jit_compile(llvm_module, entry_function)
+    result = program()
+    return JITResult(result, program.engine, program._callback_refs)
