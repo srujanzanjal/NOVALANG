@@ -6,9 +6,12 @@ and LLVM codegen — producing a real native executable.
 
 ## Status
 
-Phase 0 (setup) in progress. See `docs/decisions.md` for locked design
-decisions and `docs/grammar.ebnf` / `docs/tac_spec.md` for the language and
-IR specifications that guide implementation.
+The full pipeline (Phases 0-6) is implemented and tested: lexer, parser,
+semantic analysis, TAC/CFG IR generation, four optimizer passes, and LLVM
+codegen executed via `llvmlite`'s MCJIT. 129 tests passing. Remaining:
+benchmark report, a larger `.nova` sample-program corpus, project report,
+demo script. See `docs/decisions.md` for locked design decisions and
+`docs/grammar.ebnf` / `docs/tac_spec.md` for the language and IR specs.
 
 ## Pipeline
 
@@ -39,13 +42,22 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## Usage (planned CLI)
+## Usage
+
+Invoked as a Python module (no separate install step / console script):
 
 ```
-novac examples/factorial.nova -O2 --run
-novac examples/factorial.nova --dump-stage=tac
-novac examples/factorial.nova --passes=const-fold,dce
+python -m novac examples/factorial.nova --run
+python -m novac examples/factorial.nova --dump-stage=tac
+python -m novac examples/factorial.nova -O2 --dump-stage=optimized-tac
+python -m novac examples/factorial.nova --passes=const-fold,dce --run
 ```
+
+`--dump-stage` accepts `tokens`, `ast`, `tac`, `optimized-tac`, or
+`llvm-ir`. Optimization defaults to `-O0` (no passes), except
+`--dump-stage=optimized-tac` alone defaults to `-O2` so a before/after
+comparison against plain `--dump-stage=tac` doesn't require a second flag.
+`-O0`/`-O1`/`-O2` and `--passes=` are mutually exclusive.
 
 ## Layout
 

@@ -1,0 +1,21 @@
+func factorial(n: int) -> int {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
+func main() -> int {
+    let x: int = 10;
+    let arr: int[5] = [1, 2, 3, 4, 5];
+    let sum: int = 0;
+
+    for (let i: int = 0; i < 5; i = i + 1) {
+        sum = sum + arr[i];
+    }
+
+    print(factorial(x));
+    print(sum);
+    return 0;
+}
