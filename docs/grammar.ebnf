@@ -8,8 +8,8 @@ function        = "func" IDENT "(" [ paramList ] ")" "->" type block ;
 paramList       = param { "," param } ;
 param           = IDENT ":" type ;
 
-type            = "int" | "float" | "bool" | "string"
-                | type "[" INT_LITERAL "]" ;      (* fixed-size array, e.g. int[5] *)
+type            = scalarType [ "[" INT_LITERAL "]" ] ;   (* at most one array dimension *)
+scalarType      = "int" | "float" | "bool" | "string" ;
 
 block           = "{" { statement } "}" ;
 

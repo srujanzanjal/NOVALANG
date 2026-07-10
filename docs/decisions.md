@@ -136,6 +136,19 @@ allowlist) is the primary interface. Convenience aliases:
 optimization pass independently and measure its individual impact, not just
 "optimized vs. not."
 
+## 9a. Arrays: single dimension only
+
+**Decision:** A type is a scalar (`int`/`float`/`bool`/`string`) optionally
+followed by exactly one `[N]` — no `int[5][3]`-style multi-dimensional
+arrays. The original spec's examples only ever show 1D fixed-size arrays;
+the EBNF's naive recursive `type "[" N "]"` form would have silently
+permitted more than that.
+
+**Why:** consistent with the project's explicit "small language, deep
+compiler" philosophy — multi-dimensional array indexing adds real
+complexity to codegen (nested `getelementptr` computation) for a feature
+never actually requested.
+
 ## 9. TAC representation: real Python classes, not strings
 
 **Decision:** TAC instructions, basic blocks, and the CFG are modeled as

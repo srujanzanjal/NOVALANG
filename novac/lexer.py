@@ -51,6 +51,9 @@ class Lexer:
             if tok.type == TokenType.EOF:
                 break
             if tok.type == TokenType.ERROR and len(self.errors) >= MAX_ERRORS:
+                # always terminate the stream with EOF, even on early exit,
+                # so downstream consumers (the parser) can rely on it being present
+                tokens.append(Token(TokenType.EOF, "", None, self.line, self.col))
                 break
         return tokens
 
