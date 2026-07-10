@@ -155,6 +155,44 @@ LLVM's verifier outright. This check exists to fail fast in Phase 3 with a
 clear source-level message, instead of failing opaquely inside Phase 6
 codegen.
 
+## 11. Arrays are local-variable-only (no array params or return types)
+
+**Decision:** A function's parameters and return type may never be an
+array type. Arrays may only be declared as local variables within a
+function body.
+
+**Why:** the original spec never shows an array being passed to or
+returned from a function, and allowing it opens a real semantic question
+never asked for: are arrays passed by value (full copy) or by reference?
+By-reference would need pointer/aliasing semantics (explicitly excluded
+from this project's scope); by-value copying is a plausible but
+unrequested feature. Found while designing CSE (Phase 5): CSE needs to
+reason about whether a function call could mutate an array through an
+aliased reference, and the answer is trivially "never" once arrays can't
+cross function boundaries at all — closing this gap up front made the
+optimizer's aliasing story simple instead of speculative.
+
+## 12. Integer division/modulo: C-like truncating semantics, not Python's
+
+**Decision:** `/` and `%` on `int` operands truncate toward zero (matching
+C and LLVM's `sdiv`/`srem`), not Python's floor-based `//`/`%` (which
+round toward negative infinity and can disagree with truncation when
+operands have different signs, e.g. `-7 // 2 == -4` in Python vs. `-3` for
+truncating division). `%` on `float` operands uses C's `fmod` semantics
+(`math.fmod`), not Python's float `%`, for the same reason. Division by
+zero is not statically checked (a runtime concern, out of scope like other
+array-bounds cases) — constant folding simply declines to fold a division
+whose divisor is a zero constant, leaving it to fail at runtime exactly as
+unfolded code would.
+
+**Why:** constant folding (Phase 5) evaluates arithmetic at compile time
+in Python, but Phase 6 codegen emits LLVM's `sdiv`/`srem`/`fdiv`/`frem`
+instructions, which execute at runtime with C truncation semantics. If the
+two didn't match exactly, `-O2` output could silently compute a different
+answer than `-O0` for negative operands — which would be a real
+correctness bug hiding inside the project's own headline feature
+(measurable, behavior-preserving optimization).
+
 ## 9a. Arrays: single dimension only
 
 **Decision:** A type is a scalar (`int`/`float`/`bool`/`string`) optionally

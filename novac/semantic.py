@@ -110,6 +110,12 @@ class SemanticAnalyzer:
                 "(strings are print()-literal-only; see decisions.md #2)",
                 fn.line, fn.col,
             )
+        if fn.return_type.is_array():
+            self._error(
+                f"function '{fn.name}': arrays cannot be used as a return type "
+                "(arrays are local-variable-only; see decisions.md #11)",
+                fn.line, fn.col,
+            )
 
         scope = Scope()
         for p in fn.params:
@@ -117,6 +123,12 @@ class SemanticAnalyzer:
                 self._error(
                     f"function '{fn.name}': parameter '{p.name}' cannot have type string "
                     "(strings are print()-literal-only; see decisions.md #2)",
+                    p.line, p.col,
+                )
+            if p.type.is_array():
+                self._error(
+                    f"function '{fn.name}': parameter '{p.name}' cannot have an array type "
+                    "(arrays are local-variable-only; see decisions.md #11)",
                     p.line, p.col,
                 )
             if not scope.declare(p.name, p.type):

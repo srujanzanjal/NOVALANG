@@ -229,6 +229,16 @@ def test_for_loop_variable_not_visible_after_loop():
     assert any("undeclared variable 'i'" in m for m in messages(errors))
 
 
+def test_array_typed_parameter_disallowed():
+    _, errors = check("func f(a: int[3]) -> int { return a[0]; }")
+    assert any("cannot have an array type" in m for m in messages(errors))
+
+
+def test_array_typed_return_disallowed():
+    _, errors = check("func f() -> int[3] { let a: int[3] = [1,2,3]; return a; }")
+    assert any("cannot be used as a return type" in m for m in messages(errors))
+
+
 def test_mutual_recursion_resolves_via_forward_signatures():
     src = """
     func isEven(n: int) -> bool {
