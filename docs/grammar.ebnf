@@ -73,6 +73,8 @@ STRING_LITERAL  = '"' , { any_char_except_quote_or_newline } , '"' ;
 KEYWORDS        = "func" | "let" | "if" | "else" | "while" | "for"
                 | "return" | "int" | "float" | "bool" | "string" | "true" | "false" ;
 
+COMMENT         = "//" , { any_char_except_newline } ;  (* line comments only, stripped by the lexer *)
+
 (* ---- Notes ---- *)
 (* - Built-in print(expr) is parsed as an ordinary call; it is resolved
      specially in semantic analysis (Phase 3) rather than being a keyword. *)
