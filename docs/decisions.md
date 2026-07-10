@@ -136,11 +136,35 @@ allowlist) is the primary interface. Convenience aliases:
 optimization pass independently and measure its individual impact, not just
 "optimized vs. not."
 
+## 9. TAC representation: real Python classes, not strings
+
+**Decision:** TAC instructions, basic blocks, and the CFG are modeled as
+actual Python classes (`TACInstr` subclasses per opcode, `BasicBlock`, `CFG`)
+from the start — never formatted into strings and re-parsed.
+
+**Why:** Optimizer passes pattern-match on instruction type/fields. String-
+based IR that gets re-parsed is a common self-inflicted mess in student
+compiler projects and makes every pass harder to write and debug than it
+needs to be.
+
+## 9b. Arrays: single dimension only
+
+**Decision:** A type is a scalar (`int`/`float`/`bool`/`string`) optionally
+followed by exactly one `[N]` — no `int[5][3]`-style multi-dimensional
+arrays. The original spec's examples only ever show 1D fixed-size arrays;
+the EBNF's naive recursive `type "[" N "]"` form would have silently
+permitted more than that.
+
+**Why:** consistent with the project's explicit "small language, deep
+compiler" philosophy — multi-dimensional array indexing adds real
+complexity to codegen (nested `getelementptr` computation) for a feature
+never actually requested.
+
 ## 10. All-paths-return check (added during Phase 3, not in the original spec)
 
 **Decision:** Semantic analysis rejects any function where control can
 fall off the end without hitting a `return` on every path. Algorithm
-(`_always_returns` in `novac/semantic.py`): a `Block` always-returns if any
+(`always_returns` in `novac/semantic.py`): a `Block` always-returns if any
 statement in it always-returns (everything after that is already flagged
 separately as unreachable code); an `if` always-returns only if it has an
 `else` and **both** branches always-return; `while`/`for` are never assumed
@@ -213,27 +237,3 @@ Python-backed callback sidesteps CRT-instance/linking issues entirely,
 works identically cross-platform, and is directly testable with
 `capsys` — a standard technique for a JIT'd toy language's I/O, not a
 workaround.
-
-## 9a. Arrays: single dimension only
-
-**Decision:** A type is a scalar (`int`/`float`/`bool`/`string`) optionally
-followed by exactly one `[N]` — no `int[5][3]`-style multi-dimensional
-arrays. The original spec's examples only ever show 1D fixed-size arrays;
-the EBNF's naive recursive `type "[" N "]"` form would have silently
-permitted more than that.
-
-**Why:** consistent with the project's explicit "small language, deep
-compiler" philosophy — multi-dimensional array indexing adds real
-complexity to codegen (nested `getelementptr` computation) for a feature
-never actually requested.
-
-## 9. TAC representation: real Python classes, not strings
-
-**Decision:** TAC instructions, basic blocks, and the CFG are modeled as
-actual Python classes (`TACInstr` subclasses per opcode, `BasicBlock`, `CFG`)
-from the start — never formatted into strings and re-parsed.
-
-**Why:** Optimizer passes pattern-match on instruction type/fields. String-
-based IR that gets re-parsed is a common self-inflicted mess in student
-compiler projects and makes every pass harder to write and debug than it
-needs to be.
