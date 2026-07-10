@@ -139,6 +139,16 @@ def test_array_store_and_load():
     assert loads[0].index == ir.Const(1, "int")
 
 
+def test_temps_are_typed_in_func_locals():
+    # codegen needs an LLVM type for every temp to alloca a stack slot for
+    # it, so ir_gen must record temp types in func.locals just like vars.
+    from novac.ast_nodes import Type
+
+    fn = generate("func f() -> int { return 1 + 2; }").functions[0]
+    binop = next(i for i in fn.entry.instructions if isinstance(i, ir.BinOp))
+    assert fn.locals[binop.dest.name] == Type("int")
+
+
 def test_shadowed_variables_get_distinct_ir_names():
     src = """
     func f() -> int {

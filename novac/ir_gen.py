@@ -47,9 +47,10 @@ class IRGenerator:
 
     # -- naming helpers --
 
-    def _new_temp(self) -> ir.Temp:
+    def _new_temp(self, type_) -> ir.Temp:
         name = f"t{self.temp_counter}"
         self.temp_counter += 1
+        self.func.locals[name] = type_
         return ir.Temp(name)
 
     def _new_label(self, hint: str) -> str:
@@ -276,19 +277,19 @@ class IRGenerator:
         if isinstance(expr, ast.ArrayIndex):
             array_var = self._resolve_var(expr.array.name)
             index_val = self._gen_expr(expr.index)
-            dest = self._new_temp()
+            dest = self._new_temp(expr.type)
             self._emit(ir.ArrayLoad(dest, array_var, index_val))
             return dest
         if isinstance(expr, ast.UnaryOp):
             operand_val = self._gen_expr(expr.operand)
-            dest = self._new_temp()
+            dest = self._new_temp(expr.type)
             self._emit(ir.UnaryOp(dest, expr.op, operand_val))
             return dest
         if isinstance(expr, ast.BinaryOp):
             return self._gen_binary_op(expr)
         if isinstance(expr, ast.Call):
             arg_vals = [self._gen_expr(a) for a in expr.args]
-            dest = self._new_temp()
+            dest = self._new_temp(expr.type)
             self._emit(ir.Call(dest, expr.name, arg_vals))
             return dest
         raise AssertionError(f"unhandled expression node type: {type(expr).__name__}")
@@ -301,7 +302,7 @@ class IRGenerator:
 
         left_val = self._gen_expr(expr.left)
         right_val = self._gen_expr(expr.right)
-        dest = self._new_temp()
+        dest = self._new_temp(expr.type)
         self._emit(ir.BinOp(dest, expr.op, left_val, right_val))
         return dest
 
@@ -310,7 +311,7 @@ class IRGenerator:
         ||: if left is true, result is left (true), rhs unevaluated.
         Implemented via a shared temp reassigned along both incoming edges
         (no phi node needed — this IR is not SSA, decisions.md #9)."""
-        dest = self._new_temp()
+        dest = self._new_temp(expr.type)
         left_val = self._gen_expr(expr.left)
         self._emit(ir.Copy(dest, left_val))
 
