@@ -51,7 +51,7 @@ class Scope:
         return None
 
 
-def _always_returns(stmt) -> bool:
+def always_returns(stmt) -> bool:
     """True iff control cannot fall off the end of `stmt` without hitting a
     return. Conservative: while/for are never assumed to return (no static
     trip-count analysis), so a return only after a loop is what's required.
@@ -59,11 +59,11 @@ def _always_returns(stmt) -> bool:
     if isinstance(stmt, ast.Return):
         return True
     if isinstance(stmt, ast.Block):
-        return any(_always_returns(s) for s in stmt.statements)
+        return any(always_returns(s) for s in stmt.statements)
     if isinstance(stmt, ast.If):
         if stmt.else_branch is None:
             return False
-        return _always_returns(stmt.then_block) and _always_returns(stmt.else_branch)
+        return always_returns(stmt.then_block) and always_returns(stmt.else_branch)
     return False
 
 
@@ -127,7 +127,7 @@ class SemanticAnalyzer:
         self._check_block(fn.body, scope)
         self.current_return_type = prev_return_type
 
-        if not _always_returns(fn.body):
+        if not always_returns(fn.body):
             self._error(
                 f"function '{fn.name}' does not return a value on all code paths",
                 fn.body.line, fn.body.col,
@@ -145,7 +145,7 @@ class SemanticAnalyzer:
                 self._error("unreachable code after return statement", stmt.line, stmt.col)
                 break
             self._check_stmt(stmt, scope)
-            if isinstance(stmt, ast.Return):
+            if always_returns(stmt):
                 seen_return = True
         return scope
 

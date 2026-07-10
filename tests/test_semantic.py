@@ -174,6 +174,22 @@ def test_unreachable_code_after_return():
     assert any("unreachable code" in m for m in messages(errors))
 
 
+def test_unreachable_code_after_fully_returning_if_else():
+    src = """
+    func f(n: int) -> int {
+        if (n > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+        let x: int = 5;
+        return x;
+    }
+    """
+    _, errors = check(src)
+    assert any("unreachable code" in m for m in messages(errors))
+
+
 def test_missing_return_on_some_path():
     src = """
     func f(n: int) -> int {
