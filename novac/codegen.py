@@ -316,6 +316,13 @@ def jit_compile(llvm_module: lir.Module, entry_function: str = "main") -> Compil
     engine.finalize_object()
 
     func_ptr = engine.get_function_address(entry_function)
+    if not func_ptr:
+        # get_function_address silently returns 0 (a null pointer) rather than
+        # raising when the symbol doesn't exist — invoking a null function
+        # pointer via ctypes is a hard segfault, not a catchable Python
+        # exception, so this must be checked before ever wrapping it in a
+        # CFUNCTYPE.
+        raise ValueError(f"no function named '{entry_function}' in the compiled module")
     cfunc = ctypes.CFUNCTYPE(ctypes.c_int32)(func_ptr)
     return CompiledProgram(cfunc, engine, callback_refs)
 

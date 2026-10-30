@@ -66,7 +66,7 @@ def test_truncating_int_remainder_matches_c_not_python():
 
 
 def test_division_by_zero_is_not_folded():
-    fn = generate("func f(n: int) -> int { return n / 0; }").functions[0]
+    fn = generate("func f(int: n) -> int { return n / 0; }").functions[0]
     module = ir.Module(functions=[fn])
     changed = constant_folding.run(module)
     assert not changed
@@ -99,7 +99,7 @@ def test_const_cond_branch_simplifies_to_branch():
 # -- constant propagation --
 
 def test_propagates_within_same_block():
-    fn = generate("func f() -> int { let x: int = 5; return x + 1; }").functions[0]
+    fn = generate("func f() -> int { let int: x = 5; return x + 1; }").functions[0]
     module = ir.Module(functions=[fn])
     constant_propagation.run(module)
     ret = fn.entry.terminator
@@ -109,8 +109,8 @@ def test_propagates_within_same_block():
 
 def test_invalidated_after_reassignment():
     src = """
-    func f(y: int) -> int {
-        let x: int = 5;
+    func f(int: y) -> int {
+        let int: x = 5;
         x = y;
         return x + 1;
     }
@@ -125,7 +125,7 @@ def test_invalidated_after_reassignment():
 def test_not_propagated_across_block_boundary():
     src = """
     func f() -> int {
-        let x: int = 5;
+        let int: x = 5;
         while (x < 10) {
             x = x + 1;
         }
@@ -161,7 +161,7 @@ def test_removes_unreachable_block_after_const_branch_folds():
 
 
 def test_removes_dead_temp():
-    fn = generate("func f() -> int { let x: int = 1 + 2; return 0; }").functions[0]
+    fn = generate("func f() -> int { let int: x = 1 + 2; return 0; }").functions[0]
     module = ir.Module(functions=[fn])
     before = count_instructions(fn)
     changed = dce.run(module)
@@ -185,7 +185,7 @@ def test_does_not_remove_cross_block_live_temp():
     # a && b: the shared temp is defined in the entry block and the rhs
     # block, and used only after the merge block - DCE must not treat it
     # as locally dead in either defining block.
-    fn = generate("func f(a: bool, b: bool) -> bool { return a && b; }").functions[0]
+    fn = generate("func f(bool: a, bool: b) -> bool { return a && b; }").functions[0]
     module = ir.Module(functions=[fn])
     changed = dce.run(module)
     # the temp survives: return statement still references a live value
@@ -199,9 +199,9 @@ def test_does_not_remove_cross_block_live_temp():
 
 def test_repeated_binop_reuses_first_result():
     src = """
-    func f(a: int, b: int) -> int {
-        let x: int = a + b;
-        let y: int = a + b;
+    func f(int: a, int: b) -> int {
+        let int: x = a + b;
+        let int: y = a + b;
         return x + y;
     }
     """
@@ -224,10 +224,10 @@ def test_repeated_binop_reuses_first_result():
 
 def test_redefinition_invalidates_cached_expression():
     src = """
-    func f(a: int, b: int) -> int {
-        let x: int = a + b;
+    func f(int: a, int: b) -> int {
+        let int: x = a + b;
         a = a + 1;
-        let y: int = a + b;
+        let int: y = a + b;
         return x + y;
     }
     """
@@ -245,10 +245,10 @@ def test_redefinition_invalidates_cached_expression():
 def test_array_store_invalidates_cached_load():
     src = """
     func f() -> int {
-        let arr: int[2] = [1, 2];
-        let x: int = arr[0];
+        let int[2]: arr = [1, 2];
+        let int: x = arr[0];
         arr[0] = 99;
-        let y: int = arr[0];
+        let int: y = arr[0];
         return x + y;
     }
     """
@@ -270,11 +270,11 @@ def test_unknown_pass_name_raises():
 def test_combined_passes_reduce_instruction_count_significantly():
     src = """
     func f() -> int {
-        let a: int = 2;
-        let b: int = 3;
-        let c: int = a + b;
-        let d: int = a + b;
-        let unused: int = c * d;
+        let int: a = 2;
+        let int: b = 3;
+        let int: c = a + b;
+        let int: d = a + b;
+        let int: unused = c * d;
         return c + d;
     }
     """
@@ -288,7 +288,7 @@ def test_combined_passes_reduce_instruction_count_significantly():
 
 def test_full_program_survives_all_passes_with_valid_cfg():
     src = """
-    func factorial(n: int) -> int {
+    func factorial(int: n) -> int {
         if (n <= 1) {
             return 1;
         } else {
@@ -296,10 +296,10 @@ def test_full_program_survives_all_passes_with_valid_cfg():
         }
     }
     func main() -> int {
-        let x: int = 10;
-        let arr: int[5] = [1, 2, 3, 4, 5];
-        let sum: int = 0;
-        for (let i: int = 0; i < 5; i = i + 1) {
+        let int: x = 10;
+        let int[5]: arr = [1, 2, 3, 4, 5];
+        let int: sum = 0;
+        for (let int: i = 0; i < 5; i = i + 1) {
             sum = sum + arr[i];
         }
         print(factorial(x));

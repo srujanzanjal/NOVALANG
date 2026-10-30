@@ -60,7 +60,7 @@ def test_punctuation_and_arrow():
 
 
 def test_line_comment_is_stripped():
-    tokens = Lexer("let x: int = 1; // this is a comment\nlet y: int = 2;").tokenize()
+    tokens = Lexer("let int: x = 1; // this is a comment\nlet int: y = 2;").tokenize()
     # no ERROR tokens, and both statements' tokens are present
     assert TokenType.ERROR not in types_of(tokens)
     idents = [t.lexeme for t in tokens if t.type == TokenType.IDENT]
@@ -68,7 +68,7 @@ def test_line_comment_is_stripped():
 
 
 def test_line_and_column_tracking_across_newlines():
-    src = "let x: int = 1;\nlet y: int = 2;"
+    src = "let int: x = 1;\nlet int: y = 2;"
     tokens = Lexer(src).tokenize()
     # 'y' is on line 2
     y_tok = next(t for t in tokens if t.type == TokenType.IDENT and t.lexeme == "y")
@@ -77,7 +77,7 @@ def test_line_and_column_tracking_across_newlines():
 
 def test_full_factorial_function_tokenizes_without_errors():
     src = """
-    func factorial(n: int) -> int {
+    func factorial(int: n) -> int {
         if (n <= 1) {
             return 1;
         } else {
@@ -97,7 +97,7 @@ def test_unterminated_string_produces_error_not_crash():
 
 
 def test_unterminated_string_stops_at_newline():
-    tokens = Lexer('let s = "oops\nlet x: int = 1;').tokenize()
+    tokens = Lexer('let s = "oops\nlet int: x = 1;').tokenize()
     assert types_of(tokens)[0:2] == [TokenType.LET, TokenType.IDENT]
     error_toks = [t for t in tokens if t.type == TokenType.ERROR]
     assert len(error_toks) == 1
@@ -116,7 +116,7 @@ def test_invalid_character_produces_error_and_recovers():
 
 
 def test_malformed_numeric_literal():
-    tokens = Lexer("let x: int = 12x;").tokenize()
+    tokens = Lexer("let int: x = 12x;").tokenize()
     error_toks = [t for t in tokens if t.type == TokenType.ERROR]
     assert len(error_toks) == 1
     assert "12x" in error_toks[0].lexeme

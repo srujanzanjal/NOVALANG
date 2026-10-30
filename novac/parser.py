@@ -123,10 +123,11 @@ class Parser:
         return ast.Function(name, params, return_type, body, tok.line, tok.col)
 
     def _param(self) -> ast.Param:
-        tok = self._expect(TokenType.IDENT, "expected parameter name")
-        self._expect(TokenType.COLON, "expected ':' after parameter name")
+        tok = self._peek()
         type_ = self._type()
-        return ast.Param(tok.lexeme, type_, tok.line, tok.col)
+        self._expect(TokenType.COLON, "expected ':' after parameter type")
+        name = self._expect(TokenType.IDENT, "expected parameter name").lexeme
+        return ast.Param(name, type_, tok.line, tok.col)
 
     def _type(self) -> ast.Type:
         tok = self._peek()
@@ -174,9 +175,9 @@ class Parser:
 
     def _var_decl(self) -> ast.VarDecl:
         tok = self._expect(TokenType.LET, "expected 'let'")
-        name = self._expect(TokenType.IDENT, "expected variable name").lexeme
-        self._expect(TokenType.COLON, "expected ':' after variable name")
         type_ = self._type()
+        self._expect(TokenType.COLON, "expected ':' after variable type")
+        name = self._expect(TokenType.IDENT, "expected variable name").lexeme
         init = None
         if self._match(TokenType.ASSIGN):
             init = self._expression()

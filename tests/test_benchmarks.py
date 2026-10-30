@@ -7,13 +7,13 @@ import run_benchmarks  # noqa: E402
 
 
 def test_count_instructions_counts_body_and_terminators():
-    tac = run_benchmarks.compile_to_tac("func main() -> int { let x: int = 1 + 2; return x; }")
+    tac = run_benchmarks.compile_to_tac("func main() -> int { let int: x = 1 + 2; return x; }")
     # entry block: [t0 = 1 + 2] BinOp, [x.0 = t0] Copy, [ret x.0] terminator = 3
     assert run_benchmarks.count_instructions(tac) == 3
 
 
 def test_run_benchmark_reports_reduction_and_matching_return_values():
-    src = "func main() -> int { let a: int = 2 + 3; let unused: int = a * 100; return a; }"
+    src = "func main() -> int { let int: a = 2 + 3; let int: unused = a * 100; return a; }"
     result = run_benchmarks.run_benchmark("tiny", src)
 
     assert result["return_value"] == 5

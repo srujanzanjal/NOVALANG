@@ -2,7 +2,7 @@
 // regardless of source order because semantic analysis and codegen both
 // collect all function signatures before checking/emitting any body
 // (decisions.md #5).
-func isEven(n: int) -> bool {
+func isEven(int: n) -> bool {
     if (n == 0) {
         return true;
     } else {
@@ -10,7 +10,7 @@ func isEven(n: int) -> bool {
     }
 }
 
-func isOdd(n: int) -> bool {
+func isOdd(int: n) -> bool {
     if (n == 0) {
         return false;
     } else {

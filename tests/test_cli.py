@@ -5,7 +5,7 @@ import pytest
 from novac.cli import main
 
 FACTORIAL_SRC = """
-func factorial(n: int) -> int {
+func factorial(int: n) -> int {
     if (n <= 1) {
         return 1;
     } else {
@@ -14,11 +14,11 @@ func factorial(n: int) -> int {
 }
 
 func main() -> int {
-    let x: int = 10;
-    let arr: int[5] = [1, 2, 3, 4, 5];
-    let sum: int = 0;
+    let int: x = 10;
+    let int[5]: arr = [1, 2, 3, 4, 5];
+    let int: sum = 0;
 
-    for (let i: int = 0; i < 5; i = i + 1) {
+    for (let int: i = 0; i < 5; i = i + 1) {
         sum = sum + arr[i];
     }
 
@@ -94,7 +94,7 @@ def test_dump_stage_tac_shows_basic_blocks(nova_file):
 
 
 def test_dump_stage_optimized_tac_defaults_to_o2(nova_file):
-    src = "func main() -> int { let x: int = 2 + 3; return 0; }"
+    src = "func main() -> int { let int: x = 2 + 3; return 0; }"
     path = nova_file(src)
     code, out, err = run_cli([path, "--dump-stage=optimized-tac"])
     assert code == 0
@@ -103,7 +103,7 @@ def test_dump_stage_optimized_tac_defaults_to_o2(nova_file):
 
 
 def test_dump_stage_tac_is_not_optimized_by_default(nova_file):
-    src = "func main() -> int { let x: int = 2 + 3; return 0; }"
+    src = "func main() -> int { let int: x = 2 + 3; return 0; }"
     path = nova_file(src)
     code, out, err = run_cli([path, "--dump-stage=tac"])
     assert code == 0
@@ -119,7 +119,7 @@ def test_dump_stage_llvm_ir(nova_file):
 
 
 def test_explicit_passes_flag(nova_file):
-    src = "func main() -> int { let x: int = 2 + 3; return 0; }"
+    src = "func main() -> int { let int: x = 2 + 3; return 0; }"
     path = nova_file(src)
     code, out, err = run_cli([path, "--passes=const-fold", "--dump-stage=optimized-tac"])
     assert code == 0
@@ -134,7 +134,7 @@ def test_unknown_pass_name_reports_error(nova_file):
 
 
 def test_lexer_error_reported_and_nonzero_exit(nova_file):
-    path = nova_file('func main() -> int { let s: string = "unterminated; return 0; }')
+    path = nova_file('func main() -> int { let string: s = "unterminated; return 0; }')
     code, out, err = run_cli([path])
     assert code == 1
     assert "error:" in err
@@ -143,7 +143,7 @@ def test_lexer_error_reported_and_nonzero_exit(nova_file):
 def test_multiple_parse_errors_all_reported(nova_file):
     src = """
     func a() -> int {
-        let x: int = ;
+        let int: x = ;
     }
     func b() -> int {
         return +;

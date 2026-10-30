@@ -1,8 +1,8 @@
 // Functions with multiple parameters. No implicit int/float conversion
 // (decisions.md #4), so every operand in a mixed expression must already
 // be the same type - here all three parameters are float.
-func weightedSum(a: float, b: float, weight: float) -> float {
-    let total: float = a + b;
+func weightedSum(float: a, float: b, float: weight) -> float {
+    let float: total = a + b;
     return weight * total;
 }
 

@@ -25,7 +25,7 @@ def test_minimal_function_parses():
 
 
 def test_params_and_array_type():
-    program, errors = parse("func f(n: int, arr: int[5]) -> bool { return true; }")
+    program, errors = parse("func f(int: n, int[5]: arr) -> bool { return true; }")
     assert errors == []
     fn = program.functions[0]
     assert fn.params[0].name == "n" and fn.params[0].type == ast.Type("int")
@@ -35,8 +35,8 @@ def test_params_and_array_type():
 def test_var_decl_with_and_without_init():
     program, errors = parse("""
     func f() -> int {
-        let x: int = 5;
-        let y: int;
+        let int: x = 5;
+        let int: y;
         return x;
     }
     """)
@@ -48,7 +48,7 @@ def test_var_decl_with_and_without_init():
 
 def test_if_else_if_chain():
     program, errors = parse("""
-    func f(n: int) -> int {
+    func f(int: n) -> int {
         if (n < 0) {
             return -1;
         } else if (n == 0) {
@@ -68,7 +68,7 @@ def test_if_else_if_chain():
 def test_while_loop():
     program, errors = parse("""
     func f() -> int {
-        let i: int = 0;
+        let int: i = 0;
         while (i < 10) {
             i = i + 1;
         }
@@ -84,9 +84,9 @@ def test_while_loop():
 def test_for_loop_matches_spec_example():
     program, errors = parse("""
     func f() -> int {
-        let sum: int = 0;
-        let arr: int[5] = [1, 2, 3, 4, 5];
-        for (let i: int = 0; i < 5; i = i + 1) {
+        let int: sum = 0;
+        let int[5]: arr = [1, 2, 3, 4, 5];
+        for (let int: i = 0; i < 5; i = i + 1) {
             sum = sum + arr[i];
         }
         return sum;
@@ -105,7 +105,7 @@ def test_for_loop_matches_spec_example():
 
 
 def test_array_literal():
-    program, errors = parse("func f() -> int { let a: int[3] = [1, 2, 3]; return 0; }")
+    program, errors = parse("func f() -> int { let int[3]: a = [1, 2, 3]; return 0; }")
     assert errors == []
     decl = program.functions[0].body.statements[0]
     assert isinstance(decl.init, ast.ArrayLiteral)
@@ -124,7 +124,7 @@ def test_call_expression_statement():
 
 def test_recursive_call_factorial_example():
     src = """
-    func factorial(n: int) -> int {
+    func factorial(int: n) -> int {
         if (n <= 1) {
             return 1;
         } else {
@@ -169,7 +169,7 @@ def test_unary_and_parens():
 
 def test_full_program_from_spec():
     src = """
-    func factorial(n: int) -> int {
+    func factorial(int: n) -> int {
         if (n <= 1) {
             return 1;
         } else {
@@ -178,11 +178,11 @@ def test_full_program_from_spec():
     }
 
     func main() -> int {
-        let x: int = 10;
-        let arr: int[5] = [1, 2, 3, 4, 5];
-        let sum: int = 0;
+        let int: x = 10;
+        let int[5]: arr = [1, 2, 3, 4, 5];
+        let int: sum = 0;
 
-        for (let i: int = 0; i < 5; i = i + 1) {
+        for (let int: i = 0; i < 5; i = i + 1) {
             sum = sum + arr[i];
         }
 
@@ -201,7 +201,7 @@ def test_full_program_from_spec():
 def test_missing_semicolon_recovers_and_reports_one_error():
     program, errors = parse("""
     func f() -> int {
-        let x: int = 5
+        let int: x = 5
         return x;
     }
     """)
@@ -213,7 +213,7 @@ def test_missing_semicolon_recovers_and_reports_one_error():
 def test_multiple_independent_errors_are_all_reported():
     src = """
     func a() -> int {
-        let x: int = ;
+        let int: x = ;
     }
 
     func b() -> int {

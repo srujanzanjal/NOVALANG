@@ -21,7 +21,7 @@ def test_simple_function_single_block():
 
 
 def test_var_decl_and_return_chain_through_copy():
-    fn = generate("func f() -> int { let x: int = 5; return x; }").functions[0]
+    fn = generate("func f() -> int { let int: x = 5; return x; }").functions[0]
     entry = fn.entry
     assert isinstance(entry.instructions[0], ir.Copy)
     assert entry.instructions[0].src == ir.Const(5, "int")
@@ -38,7 +38,7 @@ def test_binary_op_generates_temp():
 
 def test_if_else_both_returning_has_no_merge_block():
     src = """
-    func f(n: int) -> int {
+    func f(int: n) -> int {
         if (n > 0) { return 1; } else { return 0; }
     }
     """
@@ -52,7 +52,7 @@ def test_if_else_both_returning_has_no_merge_block():
 
 def test_if_without_else_creates_merge_block():
     src = """
-    func f(n: int) -> int {
+    func f(int: n) -> int {
         if (n > 0) {
             return 1;
         }
@@ -68,7 +68,7 @@ def test_if_without_else_creates_merge_block():
 
 def test_cfg_preds_succs_linked_for_if_without_else():
     src = """
-    func f(n: int) -> int {
+    func f(int: n) -> int {
         if (n > 0) {
             return 1;
         }
@@ -86,7 +86,7 @@ def test_cfg_preds_succs_linked_for_if_without_else():
 def test_while_loop_structure():
     src = """
     func f() -> int {
-        let i: int = 0;
+        let int: i = 0;
         while (i < 5) {
             i = i + 1;
         }
@@ -109,8 +109,8 @@ def test_while_loop_structure():
 def test_for_loop_variable_is_scoped_and_distinct():
     src = """
     func f() -> int {
-        let sum: int = 0;
-        for (let i: int = 0; i < 5; i = i + 1) {
+        let int: sum = 0;
+        for (let int: i = 0; i < 5; i = i + 1) {
             sum = sum + i;
         }
         return sum;
@@ -125,7 +125,7 @@ def test_for_loop_variable_is_scoped_and_distinct():
 def test_array_store_and_load():
     src = """
     func f() -> int {
-        let arr: int[3] = [1, 2, 3];
+        let int[3]: arr = [1, 2, 3];
         return arr[1];
     }
     """
@@ -152,9 +152,9 @@ def test_temps_are_typed_in_func_locals():
 def test_shadowed_variables_get_distinct_ir_names():
     src = """
     func f() -> int {
-        let x: int = 1;
+        let int: x = 1;
         if (true) {
-            let x: int = 2;
+            let int: x = 2;
             return x;
         }
         return x;
@@ -167,7 +167,7 @@ def test_shadowed_variables_get_distinct_ir_names():
 
 
 def test_short_circuit_and_creates_rhs_and_merge_blocks():
-    fn = generate("func f(a: bool, b: bool) -> bool { return a && b; }").functions[0]
+    fn = generate("func f(bool: a, bool: b) -> bool { return a && b; }").functions[0]
     labels = set(fn.blocks.keys())
     assert any(l.startswith("shortcircuit.rhs") for l in labels)
     assert any(l.startswith("shortcircuit.merge") for l in labels)
@@ -177,7 +177,7 @@ def test_short_circuit_and_creates_rhs_and_merge_blocks():
 
 
 def test_short_circuit_or_branches_opposite_of_and():
-    fn = generate("func f(a: bool, b: bool) -> bool { return a || b; }").functions[0]
+    fn = generate("func f(bool: a, bool: b) -> bool { return a || b; }").functions[0]
     labels = set(fn.blocks.keys())
     rhs_label = next(l for l in labels if l.startswith("shortcircuit.rhs"))
     # short-circuit-on-true: false target of the CondBranch goes to rhs
@@ -186,7 +186,7 @@ def test_short_circuit_or_branches_opposite_of_and():
 
 def test_recursive_factorial_and_main_generate_without_crashing():
     src = """
-    func factorial(n: int) -> int {
+    func factorial(int: n) -> int {
         if (n <= 1) {
             return 1;
         } else {
@@ -194,10 +194,10 @@ def test_recursive_factorial_and_main_generate_without_crashing():
         }
     }
     func main() -> int {
-        let x: int = 10;
-        let arr: int[5] = [1, 2, 3, 4, 5];
-        let sum: int = 0;
-        for (let i: int = 0; i < 5; i = i + 1) {
+        let int: x = 10;
+        let int[5]: arr = [1, 2, 3, 4, 5];
+        let int: sum = 0;
+        for (let int: i = 0; i < 5; i = i + 1) {
             sum = sum + arr[i];
         }
         print(factorial(x));
@@ -229,7 +229,7 @@ def test_recursive_factorial_and_main_generate_without_crashing():
 
 def test_every_block_has_exactly_one_terminator():
     src = """
-    func factorial(n: int) -> int {
+    func factorial(int: n) -> int {
         if (n <= 1) {
             return 1;
         } else {
@@ -237,8 +237,8 @@ def test_every_block_has_exactly_one_terminator():
         }
     }
     func main() -> int {
-        let sum: int = 0;
-        for (let i: int = 0; i < 5; i = i + 1) {
+        let int: sum = 0;
+        for (let int: i = 0; i < 5; i = i + 1) {
             if (i == 2) {
                 sum = sum + 100;
             }

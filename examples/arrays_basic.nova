@@ -1,6 +1,6 @@
 // Fixed-size array: declaration, literal init, indexed read and write.
 func main() -> int {
-    let arr: int[5] = [10, 20, 30, 40, 50];
+    let int[5]: arr = [10, 20, 30, 40, 50];
 
     print(arr[0]);
     print(arr[4]);
@@ -8,8 +8,8 @@ func main() -> int {
     arr[2] = 999;
     print(arr[2]);
 
-    let sum: int = 0;
-    for (let i: int = 0; i < 5; i = i + 1) {
+    let int: sum = 0;
+    for (let int: i = 0; i < 5; i = i + 1) {
         sum = sum + arr[i];
     }
     print(sum);

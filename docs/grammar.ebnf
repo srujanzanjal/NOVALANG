@@ -6,7 +6,7 @@ program         = { function } ;
 
 function        = "func" IDENT "(" [ paramList ] ")" "->" type block ;
 paramList       = param { "," param } ;
-param           = IDENT ":" type ;
+param           = type ":" IDENT ;
 
 type            = scalarType [ "[" INT_LITERAL "]" ] ;   (* at most one array dimension *)
 scalarType      = "int" | "float" | "bool" | "string" ;
@@ -22,7 +22,7 @@ statement       = varDecl
                 | exprStmt
                 | block ;
 
-varDecl         = "let" IDENT ":" type [ "=" expression ] ";" ;
+varDecl         = "let" type ":" IDENT [ "=" expression ] ";" ;
 assignStmt      = lvalue "=" expression ";" ;
 lvalue          = IDENT [ "[" expression "]" ] ;
 

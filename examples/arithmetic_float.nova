@@ -1,8 +1,8 @@
 // Float arithmetic. No implicit int/float conversion anywhere
 // (decisions.md #4) - every operand here is a float literal.
 func main() -> int {
-    let a: float = 7.0;
-    let b: float = 2.0;
+    let float: a = 7.0;
+    let float: b = 2.0;
     print(a + b);
     print(a - b);
     print(a * b);

@@ -47,7 +47,7 @@ specific, verifiable ways:
 ### 1.2 What NovaLang Looks Like
 
 ```
-func factorial(n: int) -> int {
+func factorial(int: n) -> int {
     if (n <= 1) {
         return 1;
     } else {
@@ -56,11 +56,11 @@ func factorial(n: int) -> int {
 }
 
 func main() -> int {
-    let x: int = 10;
-    let arr: int[5] = [1, 2, 3, 4, 5];
-    let sum: int = 0;
+    let int: x = 10;
+    let int[5]: arr = [1, 2, 3, 4, 5];
+    let int: sum = 0;
 
-    for (let i: int = 0; i < 5; i = i + 1) {
+    for (let int: i = 0; i < 5; i = i + 1) {
         sum = sum + arr[i];
     }
 

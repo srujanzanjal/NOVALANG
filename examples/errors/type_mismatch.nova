@@ -1,7 +1,7 @@
 // Semantic error: no implicit int/float conversion (decisions.md #4).
 func main() -> int {
-    let x: int = 5;
-    let y: float = 2.5;
-    let z: int = x + y;
+    let int: x = 5;
+    let float: y = 2.5;
+    let int: z = x + y;
     return z;
 }

@@ -3,7 +3,7 @@
 // compile run (up to MAX_ERRORS) instead of aborting on the first one -
 // a GCC/Clang-style behavior most student compilers don't attempt.
 func a() -> int {
-    let x: int = ;
+    let int: x = ;
 }
 
 func b() -> int {

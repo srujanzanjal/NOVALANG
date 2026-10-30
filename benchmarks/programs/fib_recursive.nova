@@ -3,7 +3,7 @@
 // so there's nothing to fold/propagate/eliminate. Included as a baseline:
 // proof that recursion executes correctly and at real native speed, and a
 // control case showing optimization impact isn't uniform across programs.
-func fib(n: int) -> int {
+func fib(int: n) -> int {
     if (n <= 1) {
         return n;
     } else {

@@ -87,3 +87,23 @@ stated differentiators.
 - *(entry date TBD)* — doc created while still on Windows, ahead of the
   actual migration; nothing below this line has been verified on real
   macOS hardware yet.
+- **2026-07-10** — migrated to a Mac (Apple Silicon, `arm64-apple-darwin`).
+  Xcode Command Line Tools were already installed (`clang` 17, at
+  `/Library/Developer/CommandLineTools`), so §1 needed no action.
+  Recreated `.venv` from scratch with the Mac's Python 3.14 — the copied
+  `.venv` still had the Windows layout (`Scripts/`, `Include/`, `Lib/`,
+  `pyvenv.cfg` pointing at a Windows Python path) and can't be reused
+  as-is on any platform switch. `llvmlite==0.48.0` installed cleanly with
+  an `arm64-apple-darwin` wheel; `llvm.get_default_triple()` confirms the
+  target triple picked up automatically as predicted in §4 (no Windows
+  triple hardcoded anywhere in the codebase). Full suite: 154 tests pass,
+  including `test_toolchain_smoke.py` and the JIT `--run` path exercised
+  directly against several `examples/*.nova` programs. Hit exactly the
+  §4 line-ending issue: `tests/test_codegen.py` and
+  `benchmarks/results/results.json` had picked up CRLF endings from the
+  Windows-to-Mac copy (git showed them as fully-rewritten diffs even
+  though content was unchanged) — added `.gitattributes` with
+  `* text=auto` and restored both files to their committed LF form rather
+  than fighting it file-by-file, exactly as this doc suggested. §3
+  (standalone executable via `emit_object()` + system-linker) not started
+  yet — still JIT-only at this point.

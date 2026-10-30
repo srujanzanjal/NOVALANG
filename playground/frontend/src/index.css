@@ -1,0 +1,47 @@
+:root {
+  --bg-base: #0a0a0f;
+  --bg-elevated: #14141d;
+  --bg-panel: #17171f;
+  --bg-inset: #1a1a24;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text-primary: #e9e9f0;
+  --text-secondary: #9494a8;
+  --text-tertiary: #63637a;
+  --accent-violet: #8b5cf6;
+  --accent-cyan: #22d3ee;
+  --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #22d3ee 100%);
+  --success: #34d399;
+  --error: #f87171;
+  --warning: #fbbf24;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  color-scheme: dark;
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+}
+
+button,
+select {
+  font-family: inherit;
+}

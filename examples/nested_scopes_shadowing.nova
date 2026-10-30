@@ -1,13 +1,13 @@
 // Variable shadowing across nested blocks: the inner 'x' is a distinct
 // variable from the outer 'x' for the scope of the if-block only.
 func main() -> int {
-    let x: int = 1;
+    let int: x = 1;
     print(x);
     if (true) {
-        let x: int = 2;
+        let int: x = 2;
         print(x);
         if (true) {
-            let x: int = 3;
+            let int: x = 3;
             print(x);
         }
         print(x);

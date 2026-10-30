@@ -9,3 +9,7 @@ __pycache__/
 *.exe
 !examples/**/*.exe
 .pytest_cache/
+# Added by code-review-graph
+.code-review-graph/
+node_modules/
+.DS_Store
